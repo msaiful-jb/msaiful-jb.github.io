@@ -1,7 +1,185 @@
 <!DOCTYPE html>
 <html>
+<head>
+    <title>myClipboard</title>
+    <style>
+        /* Center the contents both horizontally and vertically */
+        html, body {
+            height: 100%;
+            margin: 0;
+            font-family: "Arial", sans-serif;
+        }
+ body {
+            background-color: #1f1f1f;
+            color: white;
+        }
+
+
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden; /* Hide horizontal scrollbar */
+        }
+
+        /* Add styling for the textarea and button */
+	        label, textarea, button {
+            margin-bottom: 10px;
+            background-color: #333;
+            color: white;
+            border: none;
+            padding: 10px;
+        }
+
+        /* Style for displayed inputs */
+	        .inputContainer {
+            display: flex;
+            align-items: center;
+            border: 1px solid #444;
+            padding: 10px;
+            margin: 5px;
+            background-color: #333;
+        }
+
+        .inputText {
+            flex: 1;
+            white-space: pre-line; /* Preserve line breaks */
+        }
+
+        /* Style for buttons in inputContainer */
+        .inputButtons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Style for copy and delete buttons */
+	        .copyButton, .deleteButton {
+            background-color: #007acc;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin: 2px;
+        }
+        .copyButton:hover, .deleteButton:hover {
+            background-color: #005bb0;
+        }
+
+        /* Style for the input history container */
+        #inputHistoryWrapper {
+            max-height: calc(100vh - 150px); /* Set a maximum height relative to the viewport height */
+            overflow-y: auto; /* Add vertical scroll when content exceeds the height */
+            width: 100%; /* Allow horizontal expansion */
+            text-align: center; /* Center-align content horizontally */
+            margin: 0 auto; /* Center horizontally */
+        }
+
+        /* Use media query to hide horizontal scrollbar if there's more space */
+        @media (min-width: 320px) {
+            #inputHistoryWrapper {
+                overflow-x: hidden;
+            }
+        }
+    </style>
+</head>
 <body>
-<h1>Hello World</h1>
-<p>I'm hosted with GitHub Pages.</p>
+    <h1>My Clipboard</h1>
+
+    <label for="userInput">Enter something:</label>
+    <textarea id="userInput" placeholder="Type here" onkeypress="handleKeyPress(event)"></textarea>
+    <button onclick="displayUserInput()">Submit</button>
+
+    <!-- Updated to include a div wrapper for the input history -->
+    <div id="inputHistoryWrapper">
+        <div id="inputHistory"></div>
+    </div>
+
+    <script>
+        function handleKeyPress(event) {
+            // Check if the Enter key (key code 13) was pressed
+            if (event.keyCode === 13) {
+                // Prevent the default form submission behavior
+                event.preventDefault();
+                
+                // Call the displayUserInput function when Enter is pressed
+                displayUserInput();
+            }
+        }
+
+        function copyToClipboard(text) {
+            // Create a temporary textarea element to hold the text
+            var textarea = document.createElement("textarea");
+            textarea.value = text;
+            textarea.style.position = "fixed"; // Ensure it's not visible
+            document.body.appendChild(textarea);
+
+            // Select and copy the text
+            textarea.select();
+            document.execCommand("copy");
+
+            // Remove the temporary textarea
+            document.body.removeChild(textarea);
+        }
+
+        function displayUserInput() {
+            // Get the user input value
+            var userInput = document.getElementById("userInput").value;
+
+            // Create a new div to hold the input, copy, and delete buttons
+            var inputContainer = document.createElement("div");
+            inputContainer.className = "inputContainer";
+
+            // Create a new paragraph element to display the input
+            var inputParagraph = document.createElement("p");
+            inputParagraph.className = "inputText";
+            inputParagraph.textContent = userInput;
+
+            // Create a copy button
+            var copyButton = document.createElement("button");
+            copyButton.textContent = "Copy";
+            copyButton.className = "copyButton";
+
+            // Add a click event listener to the copy button
+            copyButton.addEventListener("click", function() {
+                copyToClipboard(userInput);
+            });
+
+            // Create a delete button
+            var deleteButton = document.createElement("button");
+            deleteButton.textContent = "Delete";
+            deleteButton.className = "deleteButton";
+
+            // Add a click event listener to the delete button
+            deleteButton.addEventListener("click", function() {
+                inputContainer.remove();
+            });
+
+            // Create a container for copy and delete buttons
+            var inputButtons = document.createElement("div");
+            inputButtons.className = "inputButtons";
+
+            // Append the copy and delete buttons to the button container
+            inputButtons.appendChild(copyButton);
+            inputButtons.appendChild(deleteButton);
+
+            // Append the input, button container, and delete button to the input container
+            inputContainer.appendChild(inputParagraph);
+            inputContainer.appendChild(inputButtons);
+
+            // Get the div where we display input history
+            var inputHistory = document.getElementById("inputHistory");
+
+            // Insert the new input container at the beginning of the input history
+            inputHistory.insertBefore(inputContainer, inputHistory.firstChild);
+
+            // Clear the input field for the next entry
+            document.getElementById("userInput").value = "";
+
+            // Scroll to the bottom of the input history
+            inputHistory.scrollTop = inputHistory.scrollHeight;
+        }
+    </script>
 </body>
 </html>
