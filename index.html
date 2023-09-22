@@ -14,7 +14,6 @@
             color: white;
         }
 
-
         body {
             display: flex;
             flex-direction: column;
@@ -24,7 +23,7 @@
         }
 
         /* Add styling for the textarea and button */
-	        label, textarea, button {
+        label, textarea, button {
             margin-bottom: 10px;
             background-color: #333;
             color: white;
@@ -33,7 +32,7 @@
         }
 
         /* Style for displayed inputs */
-	        .inputContainer {
+        .inputContainer {
             display: flex;
             align-items: center;
             border: 1px solid #444;
@@ -55,7 +54,7 @@
         }
 
         /* Style for copy and delete buttons */
-	        .copyButton, .deleteButton {
+        .copyButton, .deleteButton {
             background-color: #007acc;
             color: white;
             border: none;
@@ -97,12 +96,20 @@
     </div>
 
     <script>
+        // Load the input history from localStorage when the page loads
+        window.onload = function () {
+            var inputHistory = JSON.parse(localStorage.getItem("inputHistory")) || [];
+            inputHistory.forEach(function (input) {
+                displayUserInput(input);
+            });
+        };
+
         function handleKeyPress(event) {
             // Check if the Enter key (key code 13) was pressed
             if (event.keyCode === 13) {
                 // Prevent the default form submission behavior
                 event.preventDefault();
-                
+
                 // Call the displayUserInput function when Enter is pressed
                 displayUserInput();
             }
@@ -123,9 +130,9 @@
             document.body.removeChild(textarea);
         }
 
-        function displayUserInput() {
+        function displayUserInput(userInput) {
             // Get the user input value
-            var userInput = document.getElementById("userInput").value;
+            userInput = userInput || document.getElementById("userInput").value;
 
             // Create a new div to hold the input, copy, and delete buttons
             var inputContainer = document.createElement("div");
@@ -142,7 +149,7 @@
             copyButton.className = "copyButton";
 
             // Add a click event listener to the copy button
-            copyButton.addEventListener("click", function() {
+            copyButton.addEventListener("click", function () {
                 copyToClipboard(userInput);
             });
 
@@ -152,8 +159,9 @@
             deleteButton.className = "deleteButton";
 
             // Add a click event listener to the delete button
-            deleteButton.addEventListener("click", function() {
+            deleteButton.addEventListener("click", function () {
                 inputContainer.remove();
+                updateInputHistory(); // Update the input history after deletion
             });
 
             // Create a container for copy and delete buttons
@@ -171,14 +179,28 @@
             // Get the div where we display input history
             var inputHistory = document.getElementById("inputHistory");
 
-            // Insert the new input container at the beginning of the input history
+            // Insert the new input container at the top of the input history
             inputHistory.insertBefore(inputContainer, inputHistory.firstChild);
 
             // Clear the input field for the next entry
             document.getElementById("userInput").value = "";
 
             // Scroll to the bottom of the input history
-            inputHistory.scrollTop = inputHistory.scrollHeight;
+            inputHistory.scrollTop = 0;
+
+            // Update the input history and save it to localStorage
+            updateInputHistory();
+        }
+
+        function updateInputHistory() {
+            var inputHistoryArray = [];
+            var inputContainers = document.querySelectorAll(".inputContainer");
+
+            inputContainers.forEach(function (container) {
+                inputHistoryArray.push(container.querySelector(".inputText").textContent);
+            });
+
+            localStorage.setItem("inputHistory", JSON.stringify(inputHistoryArray));
         }
     </script>
 </body>
