@@ -76,10 +76,11 @@
       </style>
    </head>
    <body>
-      <h1>My Clipboard</h1>
-      <label for="userInput">Enter something:</label>
-      <textarea id="userInput" placeholder="Type here" onkeypress="handleKeyPress(event)"></textarea>
-      <button onclick="displayUserInput()">Submit</button>
+      <div style="display: flex; align-items: center;">
+         <h1>My&nbsp;Clipboard</h1>
+         <textarea id="userInput" style="padding: 10px; margin: 5px; box-sizing: border-box; width: 100%;" placeholder="Type here" onkeypress="handleKeyPress(event)"></textarea>
+         <button style="padding: 10px; margin: 5px; box-sizing: border-box;">Submit</button>
+      </div>
       <!-- Updated to include a div wrapper for the input history -->
       <div id="inputHistoryWrapper">
          <div id="inputHistory"></div>
